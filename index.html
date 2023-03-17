@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="user-scalable=no,width=device-width" />
+    <title>Compromise Clicker</title>
+    <style>
+      * {
+        margin: 0;
+      }
+      body {
+        background: rgb(0, 0, 0);
+      }
+      main {
+        width: 100vw;
+        height: 90vh;
+        display: flex;
+        justify-content: center;
+      }
+      svg {
+        background: rgb(34, 32, 52);
+      }
+      text {
+        text-anchor: middle;
+        -webkit-user-select: none;
+        user-select: none;
+        font: 3px sans-serif;
+        fill: rgb(255, 255, 255);
+      }
+      .title {
+        font-weight: bold;
+        font-size: 5px;
+        fill: rgb(251, 242, 54);
+      }
+      .note,
+      .asset {
+        fill: rgb(155, 173, 183);
+      }
+      .compromised .asset {
+        fill: rgb(172, 50, 50);
+      }
+      .unreachable .asset {
+        opacity: 40%;
+      }
+      .label {
+        dominant-baseline: hanging;
+      }
+      .vulnerable .label {
+        text-decoration: underline;
+        fill: rgb(251, 242, 54);
+      }
+      .blue {
+        fill: rgb(48, 96, 130);
+      }
+      #score {
+        dominant-baseline: hanging;
+        font-size: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg id="svg" viewBox="-31.5,-56,63,112">
+        <defs>
+          <g id="bricks-even">
+            <path d="M0,0 h5 v2 h-5 z M6,0 h5 v2 h-5 z" />
+          </g>
+          <g id="bricks-odd">
+            <path d="M0,0 h2 v2 h-2 z M3,0 h5 v2 h-5 z M9,0 h2 v2 h-2 z" />
+          </g>
+          <g id="eye">
+            <path d="M0,0 h5 v1 h-3 v3 h-2 z" />
+            <path class="blue" d="M2,1 h3 v3 h-3 z M3,2 v1 h1 v-1 z" />
+          </g>
+          <g id="laptop">
+            <path d="M1,0 h11 v7 h-11 z M0,8 h13 v1 h-13 z" />
+            <path class="blue" d="M2,1 h9 v5 h-9 z" />
+          </g>
+          <g id="monitor-small">
+            <path d="M0,0 h7 v5 h-7 z" />
+            <path class="blue" d="M1,1 h5 v3 h-5 z" />
+          </g>
+          <g id="monitor-medium">
+            <path d="M0,0 h11 v7 h-5 v1 h2 v1 h-5 v-1 h2 v-1 h-5 z" />
+            <path class="blue" d="M1,1 h9 v5 h-9 z" />
+          </g>
+          <g id="monitor-large">
+            <path d="M0,0 h13 v9 h-6 v1 h2 v1 h-5 v-1 h2 v-1 h-6 z" />
+            <path class="blue" d="M1,1 h11 v7 h-11 z" />
+          </g>
+          <g id="tower-short">
+            <path
+              d="M0,0 h5 v9 h-5 z M1,1 v1 h3 v-1 z M1,3 v1 h3 v-1 z M2,6 v1 h1 v-1 z"
+            />
+          </g>
+          <g id="tower-tall">
+            <path
+              d="M0,0 h5 v11 h-5 z M1,1 v5 h1 v-5 z M3,1 v5 h1 v-5 z M2,8 v1 h1 v-1 z"
+            />
+          </g>
+
+          <g id="active-directory-server" transform="translate(-5.5,-11)">
+            <use href="#tower-tall" />
+            <path
+              d="M8,6 h1 v1 h-1 z M6,8 h1 v1 h-1 z M8,9 h1 v1 h-1 z M10,8 h1 v1 h-1 z"
+            />
+          </g>
+          <g id="data-historian" transform="translate(-4.5,-11)">
+            <use href="#tower-tall" />
+            <path d="M6,6 h3 v1 h-3 z M6,8 h3 v1 h-3 z M6,10 h3 v1 h-3 z" />
+          </g>
+          <g id="engineering-workstation" transform="translate(-9.5,-11)">
+            <use y="2" href="#tower-short" />
+            <use x="6" href="#monitor-large" />
+          </g>
+          <g id="firewall" transform="translate(-5.5,-11)">
+            <use href="#bricks-odd" />
+            <use y="3" href="#bricks-even" />
+            <use y="6" href="#bricks-odd" />
+            <use y="9" href="#bricks-even" />
+          </g>
+          <g id="open-source-intelligence" transform="translate(-5.5,-7)">
+            <use href="#eye" />
+            <use x="6" href="#eye" />
+          </g>
+          <g id="programmable-logic-controller" transform="translate(-6.5,-9)">
+            <path
+              d="M0,0 h13 v9 h-13 z M1,1 v1 h1 v-1 z M3,1 v1 h1 v-1 z M5,1 v1 h1 v-1 z M7,1 v1 h1 v-1 z M9,1 v1 h1 v-1 z M11,1 v1 h1 v-1 z M1,7 v1 h1 v-1 z M3,7 v1 h1 v-1 z M5,7 v1 h1 v-1 z M7,7 v1 h1 v-1 z M9,7 v1 h1 v-1 z M11,7 v1 h1 v-1 z"
+            />
+            <path class="blue" d="M1,3 h5 v3 h-5 z" />
+          </g>
+          <g id="remote-user" transform="translate(-6.5,-9)">
+            <use href="#laptop" />
+          </g>
+          <g
+            id="security-information-and-event-manager"
+            transform="translate(-5.5,-11)"
+          >
+            <use href="#tower-tall" />
+            <use x="6" y="6" href="#eye" />
+          </g>
+          <g id="spear-phish" transform="translate(-7.5,-9)">
+            <path class="blue" d="M0,5 h12 v1 h-12 z" />
+            <path d="M12,5 h1 v1 h-1 z" />
+            <use x="5" href="#tower-short" />
+          </g>
+          <g id="terminal-server" transform="translate(-7.5,-11)">
+            <use href="#tower-tall" />
+            <use x="6" y="4" href="#monitor-small" />
+            <use x="8" y="6" href="#monitor-small" />
+          </g>
+          <g id="user-workstation" transform="translate(-8.5,-9)">
+            <use href="#tower-short" />
+            <use x="6" href="#monitor-medium" />
+          </g>
+        </defs>
+        <g id="credits">
+          <text y="-9" class="title">Compromise Clicker</text>
+          <text y="-4">A small game by David E</text>
+          <a href="https://threatgen.com/">
+            <text class="note">with love and apologies to ThreatGEN&REG;</text>
+          </a>
+        </g>
+        <text id="score" y="-49.8"></text>
+      </svg>
+    </main>
+    <script>
+      "use strict";
+
+      function bernoulli(p) {
+        return Math.random() < p;
+      }
+
+      function randomChoice(choices) {
+        return choices[
+          Math.floor(
+            Math.min(Math.random() * choices.length, choices.length - 1)
+          )
+        ];
+      }
+
+      const svg = document.getElementById("svg");
+      const ns = svg.namespaceURI;
+
+      function boom() {
+        const defs = document.createElementNS(ns, "defs");
+        const def = document.createElementNS(ns, "g");
+        def.setAttributeNS(null, "id", "boom");
+        const polygon = document.createElementNS(ns, "polygon");
+        const n = 60;
+        for (let i = 0; i < n; i++) {
+          const r = 5 + 5 * (i % 2) + 10 * Math.random();
+          const p = svg.createSVGPoint();
+          p.x = r * Math.cos((2 * Math.PI * i) / n);
+          p.y = r * Math.sin((2 * Math.PI * i) / n);
+          polygon.points.appendItem(p);
+        }
+        def.appendChild(polygon);
+        defs.appendChild(def);
+
+        const g = document.createElementNS(ns, "g");
+        const red = document.createElementNS(ns, "use");
+        red.setAttributeNS(null, "href", "#boom");
+        red.setAttributeNS(null, "fill", "rgb(172,50,50)");
+        g.appendChild(red);
+        const orange = document.createElementNS(ns, "use");
+        orange.setAttributeNS(null, "href", "#boom");
+        orange.setAttributeNS(null, "fill", "rgb(223,113,38)");
+        orange.setAttributeNS(null, "transform", "scale(0.75,0.75)");
+        g.appendChild(orange);
+        const yellow = document.createElementNS(ns, "use");
+        yellow.setAttributeNS(null, "href", "#boom");
+        yellow.setAttributeNS(null, "fill", "rgb(251,242,54)");
+        yellow.setAttributeNS(null, "transform", "scale(0.5,0.5)");
+        g.appendChild(yellow);
+        const white = document.createElementNS(ns, "use");
+        white.setAttributeNS(null, "href", "#boom");
+        white.setAttributeNS(null, "fill", "rgb(255,255,255)");
+        white.setAttributeNS(null, "transform", "scale(0.25,0.25)");
+        g.appendChild(white);
+        const animate = document.createElementNS(ns, "animateTransform");
+        animate.setAttributeNS(null, "attributeName", "transform");
+        animate.setAttributeNS(null, "attributeType", "XML");
+        animate.setAttributeNS(null, "type", "scale");
+        animate.setAttributeNS(null, "from", "1,1");
+        animate.setAttributeNS(null, "to", "5,5");
+        animate.setAttributeNS(null, "begin", "indefinite");
+        animate.setAttributeNS(null, "dur", "0.5s");
+        animate.setAttributeNS(null, "fill", "freeze");
+        g.appendChild(animate);
+        svg.replaceChildren(defs, g);
+        animate.beginElement();
+      }
+
+      const viewBox = svg.viewBox.baseVal;
+      const cellWidth = viewBox.width / 3;
+      const cellHeight = viewBox.height / 5;
+
+      function makeGenericAsset(row, col, labelText, iconId) {
+        const left = viewBox.x + col * cellWidth;
+        const top = viewBox.y + row * cellHeight;
+        const x = left + cellWidth / 2;
+        const y = top + cellHeight / 2 + 2;
+        const g = document.createElementNS(ns, "g");
+
+        const noGaps = document.createElementNS(ns, "rect");
+        noGaps.setAttributeNS(null, "x", left);
+        noGaps.setAttributeNS(null, "y", top);
+        noGaps.setAttributeNS(null, "width", cellWidth);
+        noGaps.setAttributeNS(null, "height", cellHeight);
+        noGaps.setAttributeNS(null, "opacity", 0);
+        g.appendChild(noGaps);
+
+        const icon = document.createElementNS(ns, "use");
+        icon.classList.add("asset");
+        icon.setAttributeNS(null, "x", x);
+        icon.setAttributeNS(null, "y", y);
+        icon.setAttributeNS(null, "href", iconId);
+        g.appendChild(icon);
+
+        const label = document.createElementNS(ns, "text");
+        label.classList.add("label");
+        label.setAttributeNS(null, "x", x);
+        label.setAttributeNS(null, "y", y + 2);
+        label.textContent = labelText;
+        g.appendChild(label);
+
+        return g;
+      }
+
+      const instructions = document.createElementNS(ns, "g");
+      svg.appendChild(instructions);
+
+      function makeInstructionalAsset(row, col, labelText, iconId, ...classes) {
+        const g = makeGenericAsset(row, col, labelText, iconId);
+        g.classList.add(...classes);
+        instructions.appendChild(g);
+      }
+
+      function makeInstructions() {
+        makeInstructionalAsset(
+          1,
+          1,
+          "Click repeatedly to look for vulns",
+          "#firewall"
+        );
+        makeInstructionalAsset(
+          2,
+          1,
+          "Vulnerable: click to compromise host",
+          "#firewall",
+          "vulnerable"
+        );
+        makeInstructionalAsset(
+          3,
+          1,
+          "Compromised: click to scan from host",
+          "#firewall",
+          "compromised"
+        );
+        makeInstructionalAsset(
+          4,
+          1,
+          "No known route; can still look for vulns",
+          "#engineering-workstation",
+          "unreachable"
+        );
+      }
+
+      const undiscovered = "undiscovered";
+      const unreachable = "unreachable";
+      const reachable = "reachable";
+      const compromised = "compromised";
+
+      const discoveredAssets = [];
+
+      function cleanAssetsExcept(asset) {
+        const compromiseDetected = [];
+        for (const a of discoveredAssets) {
+          if (
+            a !== asset &&
+            a.state === compromised &&
+            a.monitoredBy.some((b) => b.state !== compromised) &&
+            bernoulli(a.security.detectionChance)
+          )
+            compromiseDetected.push(a);
+        }
+        for (const a of compromiseDetected) a.setState(reachable);
+      }
+
+      const score = svg.getElementById("score");
+      let clicks = 0;
+
+      function updateAll() {
+        score.textContent = clicks;
+        for (const a of discoveredAssets) {
+          if (
+            a.state === reachable &&
+            !a.neighbors.some((b) => b.state === compromised)
+          )
+            a.setState(unreachable);
+        }
+        for (const a of discoveredAssets) a.update();
+      }
+
+      const noSecurity = { findVulnsChance: 1, detectionChance: 0 };
+      const lowSecurity = { findVulnsChance: 0.5, detectionChance: 0.1 };
+      const mediumSecurity = { findVulnsChance: 0.2, detectionChance: 0.2 };
+      const highSecurity = { findVulnsChance: 0.1, detectionChance: 0.5 };
+
+      const game = document.createElementNS(ns, "g");
+      svg.appendChild(game);
+
+      function makeGameAsset(row, col, labelText, iconId, security) {
+        const asset = {
+          security: security,
+          neighbors: [],
+          awareOf: [],
+          controlledBy: [],
+          monitoredBy: [],
+
+          state: undiscovered,
+          foundVuln: false,
+
+          onCompromise: () => {},
+          onScan: () => {},
+
+          setState: (state) => {
+            if (asset.state === state) return;
+            if (asset.state === undiscovered) discoveredAssets.push(asset);
+            asset.state = state;
+            if (state === compromised) asset.onCompromise();
+          },
+
+          isVulnerable: () => {
+            return (
+              asset.foundVuln ||
+              asset.controlledBy.some((b) => b.state === compromised)
+            );
+          },
+
+          update: () => {
+            if (asset.g === undefined) {
+              asset.g = makeGenericAsset(row, col, labelText, iconId);
+              game.appendChild(asset.g);
+              asset.g.onclick = () => {
+                clicks++;
+                if (asset.state === compromised) {
+                  cleanAssetsExcept(asset);
+                  for (const a of asset.neighbors)
+                    if (a.state === undiscovered || a.state === unreachable)
+                      a.setState(reachable);
+                  for (const a of asset.awareOf)
+                    if (a.state === undiscovered) a.setState(unreachable);
+                  asset.onScan();
+                } else if (asset.state === reachable && asset.isVulnerable()) {
+                  cleanAssetsExcept(asset);
+                  asset.setState(compromised);
+                } else {
+                  cleanAssetsExcept(null);
+                  if (bernoulli(asset.security.findVulnsChance))
+                    asset.foundVuln = true;
+                }
+                updateAll();
+              };
+            }
+            asset.g.classList.toggle(
+              "unreachable",
+              asset.state === unreachable
+            );
+            asset.g.classList.toggle("vulnerable", asset.isVulnerable());
+            asset.g.classList.toggle(
+              "compromised",
+              asset.state === compromised
+            );
+          },
+        };
+        return asset;
+      }
+
+      function makeZone(...assets) {
+        for (const a of assets) {
+          for (const b of assets) {
+            if (a !== b) {
+              a.neighbors.push(b);
+              b.neighbors.push(a);
+            }
+          }
+        }
+      }
+
+      function controls(a, b) {
+        a.awareOf.push(b);
+        b.controlledBy.push(a);
+      }
+
+      function monitors(a, b) {
+        a.awareOf.push(b);
+        b.monitoredBy.push(a);
+      }
+
+      const osint = makeGameAsset(
+        0,
+        0,
+        "OSINT",
+        "#open-source-intelligence",
+        noSecurity
+      );
+      osint.isVulnerable = () => true;
+      const spearPhish = makeGameAsset(
+        0,
+        2,
+        "Spear Phish",
+        "#spear-phish",
+        lowSecurity
+      );
+      spearPhish.isVulnerable = () => true;
+
+      const mainFw = makeGameAsset(
+        1,
+        0,
+        "Main FW",
+        "#firewall",
+        mediumSecurity
+      );
+      const adServer = makeGameAsset(
+        1,
+        1,
+        "AD Server",
+        "#active-directory-server",
+        mediumSecurity
+      );
+      const siem = makeGameAsset(
+        1,
+        2,
+        "SIEM",
+        "#security-information-and-event-manager",
+        mediumSecurity
+      );
+
+      const serverFw = makeGameAsset(
+        2,
+        0,
+        "Server FW",
+        "#firewall",
+        mediumSecurity
+      );
+      const alice = makeGameAsset(
+        2,
+        1,
+        "Alice",
+        "#user-workstation",
+        lowSecurity
+      );
+      const bob = makeGameAsset(2, 2, "Bob", "#user-workstation", lowSecurity);
+
+      const carl = makeGameAsset(3, 0, "Carl", "#remote-user", lowSecurity);
+      const termServer = makeGameAsset(
+        3,
+        1,
+        "Term. Server",
+        "#terminal-server",
+        mediumSecurity
+      );
+      const historian = makeGameAsset(
+        3,
+        2,
+        "Historian",
+        "#data-historian",
+        mediumSecurity
+      );
+
+      const dmzFw = makeGameAsset(4, 0, "DMZ FW", "#firewall", highSecurity);
+      const engWs = makeGameAsset(
+        4,
+        1,
+        "Eng. WS",
+        "#engineering-workstation",
+        highSecurity
+      );
+      const plc = makeGameAsset(
+        4,
+        2,
+        "PLC",
+        "#programmable-logic-controller",
+        lowSecurity
+      );
+
+      const redTeam = { neighbors: [], state: compromised };
+      const blueTeam = { awareOf: [] };
+
+      makeZone(osint, redTeam);
+      makeZone(osint, spearPhish, mainFw, carl);
+      makeZone(mainFw, adServer, siem, serverFw);
+      if (bernoulli(0.5)) {
+        makeZone(serverFw, alice, bob, carl);
+        makeZone(serverFw, termServer, historian, dmzFw);
+      } else {
+        makeZone(serverFw, alice, bob);
+        makeZone(serverFw, carl, termServer, historian, dmzFw);
+      }
+      makeZone(dmzFw, engWs);
+      if (bernoulli(0.5)) {
+        makeZone(termServer, engWs);
+        controls(termServer, engWs);
+      } else {
+        termServer.awareOf.push(engWs);
+      }
+      if (bernoulli(0.5)) makeZone(historian, plc);
+      makeZone(engWs, plc);
+
+      controls(adServer, siem);
+      controls(adServer, alice);
+      controls(adServer, bob);
+      controls(adServer, carl);
+      if (bernoulli(0.5)) {
+        controls(adServer, termServer);
+        controls(adServer, historian);
+      }
+
+      monitors(siem, mainFw);
+      monitors(siem, adServer);
+      monitors(siem, serverFw);
+      monitors(siem, alice);
+      monitors(siem, bob);
+      monitors(siem, carl);
+      monitors(siem, termServer);
+      monitors(siem, historian);
+      monitors(siem, dmzFw);
+      monitors(siem, engWs);
+
+      monitors(historian, plc);
+      controls(engWs, plc);
+      monitors(blueTeam, spearPhish);
+      monitors(blueTeam, siem);
+
+      osint.onCompromise = () => {
+        svg.getElementById("credits").replaceChildren();
+        makeInstructions();
+      };
+      osint.onScan = () => {
+        instructions.remove();
+      };
+
+      spearPhish.onCompromise = () => {
+        randomChoice([
+          adServer,
+          siem,
+          alice,
+          alice,
+          bob,
+          bob,
+          carl,
+          historian,
+          termServer,
+          engWs,
+        ]).setState(compromised);
+      };
+
+      plc.onScan = boom;
+
+      osint.setState(reachable);
+      updateAll();
+    </script>
+  </body>
+</html>
